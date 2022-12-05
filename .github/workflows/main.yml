@@ -38,7 +38,26 @@ jobs:
       - name: Build Docker images
         uses: hiberbee/github-action-skaffold@1.19.0
         with:
-          command: build -b frontend
+          command: build -b frontend --file-output=tags.json
           repository: docker.io/signadot
           tag: ${{ github.sha }}
           filename: ${{ github.workspace }}/skaffold.yaml
+          
+      - name: Create Sandbox
+        env:
+          SIGNADOT_ORG: signadot
+          IMAGE_TAG: ${{ github.sha }}
+          SIGNADOT_API_KEY: ${{ secrets.SIGNADOT_API_KEY }}
+        run: |
+          docker run -i \
+            -e SIGNADOT_ORG=${SIGNADOT_ORG} \
+            -e SIGNADOT_API_KEY=${SIGNADOT_API_KEY} \
+            signadot/signadot-cli \
+            /signadot sandbox apply \
+            --set image=docker-user/repo:${IMAGE_TAG} \
+            --set gitsha=${IMAGE_TAG:0:6} \
+            -f - \
+            -o yaml \
+            < ${GITHUB_WORKSPACE}/.signadot/sandbox-frontend-template.yaml \
+            > ${GITHUB_WORKSPACE}/.signadot/sandbox-frontend-response.yaml
+      
