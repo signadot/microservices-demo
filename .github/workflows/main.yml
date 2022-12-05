@@ -39,7 +39,6 @@ jobs:
       - name: Build Docker images
         uses: hiberbee/github-action-skaffold@1.20.0
         with:
-          command: build
+          command: build -p frontend
           repository: docker.io/signadot
-          image: frontend
           tag: ${{ github.sha }}
