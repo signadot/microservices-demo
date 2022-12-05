@@ -44,7 +44,7 @@ jobs:
           tag: ${{ github.sha }}
           filename: ${{ github.workspace }}/skaffold.yaml
           
-      - name: Create Sandbox
+      - name: Create FE Sandbox
         env:
           SIGNADOT_ORG: signadot
           IMAGE_TAG: ${{ github.sha }}
@@ -55,7 +55,7 @@ jobs:
             -e SIGNADOT_API_KEY=${SIGNADOT_API_KEY} \
             signadot/signadot-cli \
             /signadot sandbox apply \
-            --set image=docker-user/repo:${IMAGE_TAG} \
+            --set image=signadot/frontend:${IMAGE_TAG} \
             --set gitsha=${IMAGE_TAG:0:6} \
             -f - \
             -o yaml \
