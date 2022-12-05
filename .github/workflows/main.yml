@@ -107,7 +107,8 @@ jobs:
       
       - id: get-comment-body
         run: |
-          body="$(cat ${GITHUB_WORKSPACE}/.signadot/sandbox-checkoutservice-response.json)"
+          body="$(cat ${GITHUB_WORKSPACE}/.signadot/sandbox-checkoutservice-response.json | jq -r '.routingKey') \n"
+          body="$(cat ${GITHUB_WORKSPACE}/.signadot/sandbox-checkoutservice-response.json | jq -r '.endpoints[0].url') \n"
           body="${body//'%'/'%25'}"
           body="${body//$'\n'/'%0A'}"
           body="${body//$'\r'/'%0D'}" 
