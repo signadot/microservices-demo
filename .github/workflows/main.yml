@@ -9,6 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       frontend: ${{ steps.filter.outputs.frontend }}
+      checkoutservice: ${{ steps.filter.outputs.checkoutservice }}
     steps:
       # The paths-filter action requires a checkout step for push events.
       - if: ${{ github.event_name == 'push' }}
