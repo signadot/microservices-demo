@@ -23,9 +23,11 @@ jobs:
             checkoutservice:
               - 'src/checkoutservice/**'
 
-  build:
+  build-fe:
+    needs: [ changes ]
     name: Skaffold Docker build
     runs-on: ubuntu-20.04
+    if: ${{ needs.changes.outputs.frontend == 'false' }} 
     steps:
       - uses: actions/checkout@v3
       
