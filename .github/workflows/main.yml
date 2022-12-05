@@ -39,3 +39,4 @@ jobs:
           command: build -b frontend
           repository: docker.io/signadot
           tag: ${{ github.sha }}
+          filename: $GITHUB_WORKSPACE/skaffold.yaml
