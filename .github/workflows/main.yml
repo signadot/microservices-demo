@@ -34,7 +34,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
     
       - name: Build Docker images
-        uses: hiberbee/github-action-skaffold@1.20.0
+        uses: hiberbee/github-action-skaffold@1.19.0
         with:
           command: build -b frontend
           repository: docker.io/signadot
