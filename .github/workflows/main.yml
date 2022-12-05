@@ -107,8 +107,7 @@ jobs:
       
       - id: get-comment-body
         run: |
-          body="$(cat ${GITHUB_WORKSPACE}/.signadot/sandbox-checkoutservice-response.json | jq -r '.routingKey') \n"
-          body="$(cat ${GITHUB_WORKSPACE}/.signadot/sandbox-checkoutservice-response.json | jq -r '.endpoints[0].url') \n"
+          body="https://app.signadot.com/sandbox/name/$(cat ${GITHUB_WORKSPACE}/.signadot/sandbox-checkoutservice-response.json | jq -r '.name')"
           body="${body//'%'/'%25'}"
           body="${body//$'\n'/'%0A'}"
           body="${body//$'\r'/'%0D'}" 
@@ -128,7 +127,7 @@ jobs:
           issue-number: ${{ github.event.pull_request.number }}
           comment-author: 'github-actions[bot]'
           body: |
-            Sandbox Details
+            Sandbox Ready!
             
             ${{ steps.get-comment-body.outputs.body }}
           edit-mode: replace
