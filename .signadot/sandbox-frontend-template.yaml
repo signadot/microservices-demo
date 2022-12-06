@@ -1,7 +1,7 @@
 name: 'frontend-@{gitsha}'
 spec:
   ttl:
-    duration: 2d
+    duration: 52w
   labels:
     team: frontend
     app: shop

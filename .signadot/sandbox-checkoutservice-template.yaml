@@ -1,7 +1,7 @@
 name: 'checkoutservice-@{gitsha}'
 spec:
   ttl:
-    duration: 2d
+    duration: 52w
   labels:
     team: checkoutservice
     app: shop
