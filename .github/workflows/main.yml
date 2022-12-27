@@ -49,9 +49,10 @@ jobs:
         env:
           SIGNADOT_ORG: signadot
           IMAGE_TAG: ${{ github.sha }}
-          GIT_BR: ${{ github.ref.name }}
+          GIT_BR: ${{ github.ref_name }}
           SIGNADOT_API_KEY: ${{ secrets.SIGNADOT_API_KEY }}
         run: |
+          echo $GIT_BR
           docker run -i \
             -e SIGNADOT_ORG=${SIGNADOT_ORG} \
             -e SIGNADOT_API_KEY=${SIGNADOT_API_KEY} \

@@ -4,7 +4,6 @@ spec:
     duration: 52w
   labels:
     team: frontend
-    app: shop
   description: sandbox to test new frontend change
   cluster: demo
   forks:
