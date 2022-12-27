@@ -5,6 +5,7 @@ spec:
   labels:
     team: checkoutservice
     app: shop
+    feature: demo-feature-1
   description: sandbox env to test new checkout service
   cluster: demo
   forks:
