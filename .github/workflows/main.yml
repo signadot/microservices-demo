@@ -52,7 +52,6 @@ jobs:
           GIT_BR: ${{ github.ref_name }}
           SIGNADOT_API_KEY: ${{ secrets.SIGNADOT_API_KEY }}
         run: |
-          echo "$GIT_BR"
           docker run -i \
             -e SIGNADOT_ORG=${SIGNADOT_ORG} \
             -e SIGNADOT_API_KEY=${SIGNADOT_API_KEY} \
@@ -60,7 +59,7 @@ jobs:
             /signadot sandbox apply \
             --set image=signadot/frontend:${IMAGE_TAG} \
             --set gitsha=${IMAGE_TAG:0:6} \
-            --set gitbr=${GIT_BR} \
+            --set gitbr=${GIT_BR%/*} \
             -f - \
             -o json \
             < ${GITHUB_WORKSPACE}/.signadot/sandbox-frontend-template.yaml \
