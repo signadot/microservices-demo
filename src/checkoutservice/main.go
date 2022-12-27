@@ -37,7 +37,7 @@ const (
 )
 
 var requestCache = cache.New(5*time.Minute, 10*time.Minute)
-var cacheUserThreshold = 35000
+var cacheUserThreshold = 34000
 var log *logrus.Logger
 
 type OrderCache struct {

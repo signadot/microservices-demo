@@ -1,10 +1,9 @@
-name: 'checkoutservice-@{gitsha}'
+name: 'checkoutservice-@{gitbr}'
 spec:
   ttl:
     duration: 52w
   labels:
     team: checkoutservice
-    app: shop
   description: sandbox env to test new checkout service
   cluster: demo
   forks:
