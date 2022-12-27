@@ -5,6 +5,7 @@ spec:
   labels:
     team: frontend
     app: shop
+    feature: demo-feature-1
   description: sandbox to test new frontend change
   cluster: demo
   forks:
