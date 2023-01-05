@@ -4,6 +4,7 @@ spec:
     duration: 52w
   labels:
     team: frontend
+    feature: demo-feature-1
   description: sandbox to test new frontend change
   cluster: demo
   forks:
