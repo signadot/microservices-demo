@@ -4,6 +4,7 @@ spec:
     duration: 52w
   labels:
     team: frontend
+    git_branch: '@{gitbr}'
   description: sandbox to test new frontend change
   cluster: demo
   forks:

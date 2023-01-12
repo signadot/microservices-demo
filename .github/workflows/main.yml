@@ -49,7 +49,7 @@ jobs:
         env:
           SIGNADOT_ORG: signadot
           IMAGE_TAG: ${{ github.sha }}
-          GIT_BR: ${{ github.ref_name }}
+          GIT_BR: ${{ github.ref }}
           SIGNADOT_API_KEY: ${{ secrets.SIGNADOT_API_KEY }}
         run: |
           docker run -i \
@@ -59,7 +59,7 @@ jobs:
             /signadot sandbox apply \
             --set image=signadot/frontend:${IMAGE_TAG} \
             --set gitsha=${IMAGE_TAG:0:6} \
-            --set gitbr=${GIT_BR%/*} \
+            --set gitbr=${GIT_BR##*/} \
             -f - \
             -o json \
             < ${GITHUB_WORKSPACE}/.signadot/sandbox-frontend-template.yaml \
@@ -120,7 +120,7 @@ jobs:
         env:
           SIGNADOT_ORG: signadot
           IMAGE_TAG: ${{ github.sha }}
-          GIT_BR: ${{ github.ref_name }}
+          GIT_BR: ${{ github.ref }}
           SIGNADOT_API_KEY: ${{ secrets.SIGNADOT_API_KEY }}
         run: |
           docker run -i \
@@ -130,7 +130,7 @@ jobs:
             /signadot sandbox apply \
             --set image=signadot/checkoutservice:${IMAGE_TAG} \
             --set gitsha=${IMAGE_TAG:0:6} \
-            --set gitbr=${GIT_BR%/*} \
+            --set gitbr=${GIT_BR##*/} \
             -f - \
             -o json \
             < ${GITHUB_WORKSPACE}/.signadot/sandbox-checkoutservice-template.yaml \
