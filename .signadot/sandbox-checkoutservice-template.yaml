@@ -4,7 +4,7 @@ spec:
     duration: 52w
   labels:
     team: checkoutservice
-    feature: demo-feature-1
+    git_branch: '@{gitbr}'
   description: sandbox env to test new checkout service
   cluster: demo
   forks:
