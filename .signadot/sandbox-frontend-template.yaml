@@ -1,4 +1,4 @@
-name: 'frontend-@{gitbr}'
+name: 'fe-@{gitbr}'
 spec:
   ttl:
     duration: 52w
