@@ -1,4 +1,4 @@
-name: 'checkoutservice-@{gitbr}'
+name: 'cos-@{gitbr}'
 spec:
   ttl:
     duration: 52w
