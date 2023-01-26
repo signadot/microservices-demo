@@ -16,7 +16,7 @@ spec:
       serviceAccountName: default
       containers:
       - name: server
-        image: signadot/shippingservice:latest
+        image: shippingservice
         ports:
         - containerPort: 50051
         env:

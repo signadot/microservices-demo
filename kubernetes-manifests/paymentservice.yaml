@@ -17,7 +17,7 @@ spec:
       terminationGracePeriodSeconds: 5
       containers:
       - name: server
-        image: signadot/paymentservice:latest
+        image: paymentservice
         ports:
         - containerPort: 50051
         env:
