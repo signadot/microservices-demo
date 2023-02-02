@@ -116,7 +116,7 @@ redis-cart-5d45978b94-z56zs             1/1     Running   0          46s
 shippingservice-b98d4848c-7hr7t         2/2     Running   0          46s
 ```
 
-Note that each Pod contains two running containers: the Signadot Operator automatically creates sidecar containers to proxy requests to the appropriate sandboxes. Annotations on workloads instruct Signadot on which workloads to proxy and how to proxy requests. To learn more, please see [Request Routing](https://docs.signadot.com/docs/request-routing/) and [an example](https://github.com/signadot/microservices-demo/blob/main/kubernetes-manifests/adservice.yaml#L14) in this Github repo.
+> **Note**: Each Pod contains two running containers: the Signadot Operator automatically creates sidecar containers to proxy requests to the appropriate sandboxes. Annotations on workloads instruct Signadot on which workloads to proxy and how to proxy requests. To learn more, please see [Request Routing](https://docs.signadot.com/docs/request-routing/) and [an example](https://github.com/signadot/microservices-demo/blob/main/kubernetes-manifests/adservice.yaml#L14) in this Github repo.
 
 You can then navigate to the app’s frontend using `kubectl port-forward`:
 
@@ -156,12 +156,12 @@ Next, add the `ShippingTrackingId` field to `OrderResult`:
 ```go
 . . . (line 272)
 orderResult := &pb.OrderResult{
-		OrderId:         orderID.String(),
-		ShippingTrackingId: shippingTrackingID,
-		ShippingCost:    prep.shippingCostLocalized,
-		ShippingAddress: req.Address,
-		Items:           prep.orderItems,
-	}
+    OrderId:         orderID.String(),
+    ShippingTrackingId: shippingTrackingID,
+    ShippingCost:    prep.shippingCostLocalized,
+    ShippingAddress: req.Address,
+    Items:           prep.orderItems,
+}
 . . .
 ```
 
@@ -183,7 +183,7 @@ Once it’s been built, push it to your repo:
 $ docker push <DOCKER_USERNAME>/<DOCKER_REPO>:feat-x-add-tracking-id-latest
 ```
 
-> **Note:** Be sure to build the appropriate image for the Nodes your K8s cluster runs on. You can use Docker’s `buildx` to build multi-platform images. To learn more, please see[ Multi-platform images](https://docs.docker.com/build/building/multi-platform/).
+> **Note**: Be sure to build the appropriate image for the Nodes your K8s cluster runs on. You can use Docker’s `buildx` to build multi-platform images. To learn more, please see[ Multi-platform images](https://docs.docker.com/build/building/multi-platform/).
 
 At this point, the modified image is available for use in the cluster. We’ll now use a Sandbox to test the feature with our existing baseline environment.
 
@@ -287,13 +287,14 @@ We can now make our change. Open `src/frontend/templates/order.html` and add a `
 
 ```html
 . . .
-				
-	  <p>Order Confirmation ID</p>
-      <p class="mg-bt"><strong>{{.order.OrderId}}</strong></p>
-	  <p>Shipping Tracking ID</p>
-      <p class="mg-bt"><strong>{{.order.ShippingTrackingId}}</strong></p>
-      <p>Shipping Cost</p>
-      <p class="mg-bt"><strong>{{renderMoney .order.ShippingCost}}</strong></p>
+
+    <p>Order Confirmation ID</p>
+    <p class="mg-bt"><strong>{{.order.OrderId}}</strong></p>
+    <p>Shipping Tracking ID</p>
+    <p class="mg-bt"><strong>{{.order.ShippingTrackingId}}</strong></p>
+    <p>Shipping Cost</p>
+    <p class="mg-bt"><strong>{{renderMoney .order.ShippingCost}}</strong></p>
+
 . . .
 ```
 
@@ -332,7 +333,7 @@ spec:
 
 We can then create the Sandbox using the CLI:
 
-```yaml
+```bash
 $ signadot sandbox apply -f ./frontend-template.yaml --set name=feat-x-frontend --set frontend-tag=feat-x-add-tracking-id-latest
 ```
 
@@ -398,7 +399,7 @@ shippingservice                                  1/1     1            1         
 
 Once both teams are ready to merge their changes, the sandboxes and RouteGroup can be deleted:
 
-```yaml
+```bash
 $ signadot sandbox delete feat-x-frontend
 $ signadot sandbox delete feat-x-checkoutsvc
 $ signadot routegroup delete feat-x-add-shipping-id-e2e
