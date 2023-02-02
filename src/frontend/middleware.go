@@ -2,15 +2,14 @@ package main
 
 import (
 	"context"
+	"net/http"
+	"os"
+	"time"
+
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
-	"math/rand"
-	"net/http"
-	"strconv"
-	"strings"
-	"time"
 )
 
 type ctxKeyLog struct{}
@@ -97,44 +96,27 @@ func instrumentHandler(fn httpHandler) httpHandler {
 }
 
 func ensureSessionID(next http.Handler) http.HandlerFunc {
-
 	return func(w http.ResponseWriter, r *http.Request) {
 		var sessionID string
-		userAgent := r.UserAgent()
-		rnd := rand.Intn(100) + 1
-
-		// DEMO: If the checkoutservice Cache size is greater than the userThreshold (default 35000)
-		// AND the request is from the load generator (useragent contains python)
-		// AND rnd > PercentNormal
-		// Then we will use a session id of 20109 to emphasize a problematic user
-		// sessionID will be referenced as userid in OpenTelemetry data
-		if CacheTrack.IsOverUserThreshold() && strings.Contains(userAgent, "python") && rnd > PercentNormal {
-			// Use the static sessionID "20109"
-			sessionID = "20109"
+		c, err := r.Cookie(cookieSessionID)
+		if err == http.ErrNoCookie {
+			if os.Getenv("ENABLE_SINGLE_SHARED_SESSION") == "true" {
+				// Hard coded user id, shared across sessions
+				sessionID = "12345678-1234-1234-1234-123456789123"
+			} else {
+				u, _ := uuid.NewRandom()
+				sessionID = u.String()
+			}
 			http.SetCookie(w, &http.Cookie{
 				Name:   cookieSessionID,
 				Value:  sessionID,
 				MaxAge: cookieMaxAge,
 			})
+		} else if err != nil {
+			return
 		} else {
-			// generate a sparse but random-looking set of session IDs
-			rsession := rand.Intn(25) + (rand.Intn(25) * 100) + (rand.Intn(25) * 10000)
-			sessionID = strconv.Itoa(rsession)
-
-			c, err := r.Cookie(cookieSessionID)
-			if err == http.ErrNoCookie {
-				http.SetCookie(w, &http.Cookie{
-					Name:   cookieSessionID,
-					Value:  sessionID,
-					MaxAge: cookieMaxAge,
-				})
-			} else if err != nil {
-				return
-			} else {
-				sessionID = c.Value
-			}
+			sessionID = c.Value
 		}
-
 		ctx := context.WithValue(r.Context(), ctxKeySessionID{}, sessionID)
 		r = r.WithContext(ctx)
 		next.ServeHTTP(w, r)

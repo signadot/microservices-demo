@@ -28,7 +28,7 @@ import (
 const (
 	port            = "8080"
 	defaultCurrency = "USD"
-	cookieMaxAge    = 5 //60 * 60 * 48
+	cookieMaxAge    = 60 * 60 * 48
 
 	cookiePrefix    = "shop_"
 	cookieSessionID = cookiePrefix + "session-id"
