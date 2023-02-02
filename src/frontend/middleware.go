@@ -2,13 +2,14 @@ package main
 
 import (
 	"context"
+	"net/http"
+	"os"
+	"time"
+
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
-    "os"
-	"net/http"
-	"time"
 )
 
 type ctxKeyLog struct{}
