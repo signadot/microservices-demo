@@ -110,4 +110,3 @@ The userid and requestid will be available to all downstream spans.
 ```
 
 Baggage is propagated to downstream services, but by default it is not exported to your telemetry backend.
-A Span Processor that explicitly exports Baggage is required to export this data to a telemetry backend like Honeycomb.
