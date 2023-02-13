@@ -17,7 +17,7 @@ spec:
       terminationGracePeriodSeconds: 5
       containers:
       - name: server
-        image: signadot/cartservice:latest
+        image: cartservice
         ports:
         - containerPort: 7070
         env:

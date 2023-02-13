@@ -16,7 +16,7 @@ spec:
       serviceAccountName: default
       containers:
         - name: server
-          image: signadot/frontend:latest
+          image: frontend
           ports:
           - containerPort: 8080
           # readinessProbe:
