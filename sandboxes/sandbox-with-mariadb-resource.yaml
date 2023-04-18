@@ -6,7 +6,7 @@ spec:
     team: productcatalogservice
     owner: foxish
   description: sandbox env to test a new productcatalogservice
-  cluster: foxish-minikube
+  cluster: demo
   resources:
   - name: mariadb
     plugin: productcatalog-mariadb
@@ -18,20 +18,15 @@ spec:
               "enabled": false
             }
           },
-          
           "serviceAccount": {
             "create": false
           },
-
           "auth": {
             "database": "productcatalogservice",
             "rootPassword": "root"
           },
-
           "initdbScripts": {
-            "backup.sql": "CREATE TABLE `products` (`id` VARCHAR(1024), `name` VARCHAR(1024),`description` VARCHAR(1024),`picture` VARCHAR(1024),`price_usd` JSON,`categories` JSON); 
-            
-            INSERT INTO `products` VALUES ('16BEE20109','Honeybee Plush','Adorable plush toy that wants to be snuggled like any other fuzzy.','/static/img/products/bee-plush.jpg','{ \"currency_code\": \"USD\", \"units\": 35, \"nanos\": 780000000 }','[\"toy\"]');"
+            "backup.sql": "CREATE TABLE `products` (\n  `id` VARCHAR(1024),\n  `name` VARCHAR(1024),\n  `description` VARCHAR(1024),\n  `picture` VARCHAR(1024),\n  `price_usd` JSON,\n  `categories` JSON\n);\n\nINSERT INTO `products` VALUES\n('16BEE20109','Honeybee Plush','Adorable plush toy that wants to be snuggled like any other fuzzy.','/static/img/products/bee-plush.jpg','{ \"currency_code\": \"USD\", \"units\": 35, \"nanos\": 780000000 }','[\"toy\"]');\n"
           }
         }
   forks:
