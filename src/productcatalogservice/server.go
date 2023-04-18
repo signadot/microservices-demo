@@ -106,7 +106,10 @@ func main() {
 	flag.Parse()
 
 	var err error
-	db, err = sqlx.Open("mysql", "root:root@(mariadb.microservices-demo.svc:3306)/productcatalogservice")
+
+	db, err = sqlx.Open("mysql",
+		fmt.Sprintf("root:root@(%s:%s)/productcatalogservice",
+			os.Getenv("DB_HOST"), os.Getenv("DB_PORT")))
 	if err != nil {
 		panic(err)
 	}
