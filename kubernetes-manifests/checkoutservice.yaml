@@ -16,7 +16,7 @@ spec:
       serviceAccountName: default
       containers:
         - name: server
-          image: signadot/checkoutservice:latest
+          image: checkoutservice:latest
           ports:
           - containerPort: 5050
           # readinessProbe:

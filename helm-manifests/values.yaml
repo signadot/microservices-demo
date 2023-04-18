@@ -1,0 +1,35 @@
+initdbScripts:
+  backup.sql: |        
+    CREATE TABLE `products` (
+      `id` VARCHAR(1024),
+      `name` VARCHAR(1024),
+      `description` VARCHAR(1024),
+      `picture` VARCHAR(1024),
+      `price_usd` JSON,
+      `categories` JSON
+    );
+
+    INSERT INTO `products` VALUES
+    ('16BEE20109','Honeybee Plush','Adorable plush toy that wants to be snuggled like any other fuzzy.','/static/img/products/bee-plush.jpg','{ "currency_code": "USD", "units": 30, "nanos": 780000000 }','["toy"]'),
+    ('999SLO4D20','20 sided die','The ultimate observability quest tool.','/static/img/products/d20.jpg','{ "currency_code": "USD", "units": 15, "nanos": 200000000 }','["game"]'),
+    ('OLJCESPC7Z','Vintage Typewriter','This typewriter looks good in your living room.','/static/img/products/typewriter.jpg','{ "currency_code": "USD", "units": 67, "nanos": 990000000 }','["vintage"]'),
+    ('66VCHSJNUP','Vintage Camera Lens','You won''t have a camera to use it and it probably doesn''t work anyway.','/static/img/products/camera-lens.jpg','{ "currency_code": "USD", "units": 12, "nanos": 490000000 }','["photography","vintage"]'),
+    ('1YMWWN1N4O','Home Barista Kit','Always wanted to brew coffee with Chemex and Aeropress at home?','/static/img/products/barista-kit.jpg','{ "currency_code": "USD", "units": 124, "nanos": 0 }','["cookware"]'),
+    ('DG9ZAG9RCG','Toshok has a Branch','An original ''Toshok has a Branch for that'' t-shirt.','/static/img/products/toshok-branch.jpg','{ "currency_code": "USD", "units": 34, "nanos": 980000000 }','["game"]'),
+    ('L9ECAV7KIM','Terrarium','This terrarium will looks great in your white painted living room.','/static/img/products/terrarium.jpg','{ "currency_code": "USD", "units": 36, "nanos": 450000000 }','["gardening"]'),
+    ('2ZYFJ3GM2N','Film Camera','This camera looks like it''s a film camera, but it''s actually digital.','/static/img/products/film-camera.jpg','{ "currency_code": "USD", "units": 2245, "nanos": 0 }','["photography","vintage"]'),
+    ('0PUK6V6EV0','Vintage Record Player','It still works.','/static/img/products/record-player.jpg','{ "currency_code": "USD", "units": 65, "nanos": 500000000 }','["music","vintage"]'),
+    ('LS4PSXUNUM','Metal Camping Mug','You probably don''t go camping that often but this is better than plastic cups.','/static/img/products/camp-mug.jpg','{ "currency_code": "USD", "units": 24, "nanos": 330000000 }','["cookware"]'),
+    ('9SIQT8TOJO','City Bike','This single gear bike probably cannot climb the hills of San Francisco.','/static/img/products/city-bike.jpg','{ "currency_code": "USD", "units": 789, "nanos": 500000000 }','["cycling"]'),
+    ('6E92ZMYYFZ','Air Plant','Have you ever wondered whether air plants need water? Buy one and figure out.','/static/img/products/air-plant.jpg','{ "currency_code": "USD", "units": 12, "nanos": 300000000 }','["gardening"]');
+
+primary:
+  persistence:
+    enabled: false
+
+serviceAccount:
+  create: false
+
+auth:
+  database: productcatalogservice
+  rootPassword: "root"
