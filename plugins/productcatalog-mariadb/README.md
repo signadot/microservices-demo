@@ -1,6 +1,7 @@
-# MariaDB Plugin
+# ProductCatalog MariaDB Plugin
 
-This is a resource plugin that provisions a temporary mariadb server for use within a sandbox.
+This is a resource plugin that provisions a temporary mariadb server for use within a sandbox associated
+with the Product Catalog service.
 
 ## Installing the Plugin
 
@@ -8,7 +9,7 @@ Before installing the plugin, create the required service account and RBAC permi
 
 ```sh
 kubectl -n signadot create -f ./k8s/mariadb-init.yaml
-```
+``` 
 
 Using the `signadot` CLI, register the plugin in Signadot Control Plane:
 

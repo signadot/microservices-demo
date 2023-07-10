@@ -9,7 +9,7 @@ spec:
     namespace: signadot
     podTemplateOverlay: |
       spec:
-        serviceAccountName: sd-mariadb
+        serviceAccountName: sd-productcatalog-mariadb
 
   create:
   - name: provision

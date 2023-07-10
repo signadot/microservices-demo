@@ -66,16 +66,7 @@ minikube start --cpus=4 --memory 4096 --disk-size 32g
 
 4. Run `kubectl get pods` to verify the Pods are ready and running.
 
-5. Access the web frontend through your browser
-
-- **Minikube** requires you to run a command to access the frontend service:
-```shell
-minikube service frontend-external
-```
-
-- **Docker For Desktop** should automatically provide the frontend at
-  http://localhost:80
-
+5. Access the web frontend via port forwarding.
 
 ### Cleanup
 
