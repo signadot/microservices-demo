@@ -1,0 +1,53 @@
+name: 'sandbox-productcatalogsvc'
+spec:
+  ttl:
+    duration: 10w
+  labels:
+    team: productcatalogservice
+    owner: foxish
+  description: sandbox env to test a new productcatalogservice
+  cluster: demo
+  resources:
+  - name: mariadb
+    plugin: productcatalog-mariadb
+    params:
+      values: |
+        {
+          "primary": {
+            "persistence": {
+              "enabled": false
+            }
+          },
+          "serviceAccount": {
+            "create": false
+          },
+          "auth": {
+            "database": "productcatalogservice",
+            "rootPassword": "root"
+          },
+          "initdbScripts": {
+            "backup.sql": "CREATE TABLE `products` (\n  `id` VARCHAR(1024),\n  `name` VARCHAR(1024),\n  `description` VARCHAR(1024),\n  `picture` VARCHAR(1024),\n  `price_usd` JSON,\n  `categories` JSON\n);\n\nINSERT INTO `products` VALUES\n('16BEE20109','Honeybee Plush','Adorable plush toy that wants to be snuggled like any other fuzzy.','/static/img/products/bee-plush.jpg','{ \"currency_code\": \"USD\", \"units\": 35, \"nanos\": 780000000 }','[\"toy\"]');\n"
+          }
+        }
+  forks:
+  - forkOf:
+      kind: Deployment
+      name: productcatalogservice
+      namespace: shop
+    customizations:
+      env:
+      - name: DB_HOST
+        valueFrom:
+          resource:
+            name: mariadb
+            outputKey: provision.host
+      - name: DB_PORT
+        valueFrom:
+          resource:
+            name: mariadb
+            outputKey: provision.port
+  endpoints:
+  - name: hotrod-fe
+    host: frontend.shop.svc
+    port: 80
+    protocol: http

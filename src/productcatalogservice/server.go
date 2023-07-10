@@ -1,10 +1,19 @@
 package main
 
 import (
-	"bytes"
 	"context"
+	"encoding/json"
 	"flag"
 	"fmt"
+	_ "github.com/go-sql-driver/mysql"
+	"github.com/jmoiron/sqlx"
+	"math/rand"
+	"net"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
+
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
@@ -13,20 +22,10 @@ import (
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	semconv "go.opentelemetry.io/otel/semconv/v1.7.0"
 	"go.opentelemetry.io/otel/trace"
-	"io/ioutil"
-	"math/rand"
-	"net"
-	"os"
-	"os/signal"
-	"strings"
-	"sync"
-	"syscall"
-	"time"
 
 	pb "github.com/honeycombio/microservices-demo/src/productcatalogservice/demo/msdemo"
 	healthpb "google.golang.org/grpc/health/grpc_health_v1"
 
-	"github.com/golang/protobuf/jsonpb"
 	"github.com/sirupsen/logrus"
 
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
@@ -37,10 +36,10 @@ import (
 )
 
 var (
-	cat          pb.ListProductsResponse
-	catalogMutex *sync.Mutex
-	log          *logrus.Logger
+	cat pb.ListProductsResponse
+	log *logrus.Logger
 
+	db   *sqlx.DB
 	port = "3550"
 
 	reloadCatalog bool
@@ -57,11 +56,6 @@ func init() {
 		TimestampFormat: time.RFC3339Nano,
 	}
 	log.Out = os.Stdout
-	catalogMutex = &sync.Mutex{}
-	err := readCatalogFile(&cat)
-	if err != nil {
-		log.Warnf("could not parse product catalog")
-	}
 }
 
 func initOtelTracing(ctx context.Context, log logrus.FieldLogger) *sdktrace.TracerProvider {
@@ -111,6 +105,21 @@ func main() {
 
 	flag.Parse()
 
+	var err error
+
+	db, err = sqlx.Open("mysql",
+		fmt.Sprintf("root:root@(%s:%s)/productcatalogservice",
+			os.Getenv("DB_HOST"), os.Getenv("DB_PORT")))
+	if err != nil {
+		panic(err)
+	}
+	defer db.Close()
+
+	// Connect and check the server version
+	var version string
+	db.QueryRow("SELECT VERSION()").Scan(&version)
+	fmt.Println("Connected to:", version)
+
 	sigs := make(chan os.Signal, 1)
 	signal.Notify(sigs, syscall.SIGUSR1, syscall.SIGUSR2)
 	go func() {
@@ -148,7 +157,6 @@ func run(port string) string {
 	)
 
 	svc := &productCatalog{}
-
 	pb.RegisterProductCatalogServiceServer(srv, svc)
 	healthpb.RegisterHealthServer(srv, svc)
 	go func() {
@@ -158,35 +166,6 @@ func run(port string) string {
 }
 
 type productCatalog struct{}
-
-func readCatalogFile(catalog *pb.ListProductsResponse) error {
-	catalogMutex.Lock()
-	defer catalogMutex.Unlock()
-	catalogJSON, err := ioutil.ReadFile("products.json")
-	if err != nil {
-		log.Fatalf("failed to open product catalog json file: %v", err)
-		return err
-	}
-	if err := jsonpb.Unmarshal(bytes.NewReader(catalogJSON), catalog); err != nil {
-		log.Warnf("failed to parse the catalog JSON: %v", err)
-		return err
-	}
-	log.Info("successfully parsed product catalog json")
-
-	sleepRandom(50)
-
-	return nil
-}
-
-func parseCatalog() []*pb.Product {
-	if reloadCatalog || len(cat.Products) == 0 {
-		err := readCatalogFile(&cat)
-		if err != nil {
-			return []*pb.Product{}
-		}
-	}
-	return cat.Products
-}
 
 func getRandomWaitTime(max int, buckets int) float32 {
 	num := float32(0)
@@ -202,16 +181,6 @@ func sleepRandom(max int) {
 	time.Sleep((time.Duration(rnd)) * time.Millisecond)
 }
 
-func mockDatabaseCall(ctx context.Context, maxTime int, name, query string) {
-	tracer := otel.GetTracerProvider().Tracer("")
-	ctx, span := tracer.Start(ctx, name)
-	span.SetAttributes(attribute.String("db.statement", query),
-		attribute.String("db.name", "productcatalog"))
-	defer span.End()
-
-	sleepRandom(maxTime)
-}
-
 func (p *productCatalog) Check(_ context.Context, _ *healthpb.HealthCheckRequest) (*healthpb.HealthCheckResponse, error) {
 	return &healthpb.HealthCheckResponse{Status: healthpb.HealthCheckResponse_SERVING}, nil
 }
@@ -221,39 +190,77 @@ func (p *productCatalog) Watch(_ *healthpb.HealthCheckRequest, _ healthpb.Health
 }
 
 func (p *productCatalog) ListProducts(ctx context.Context, _ *pb.Empty) (*pb.ListProductsResponse, error) {
-	mockDatabaseCall(ctx, 40, "SELECT productcatalog.products", "SELECT * FROM products")
-	return &pb.ListProductsResponse{Products: parseCatalog()}, nil
+	var products []*pb.Product
+	rows, err := db.QueryxContext(ctx, "SELECT * FROM products")
+	if err != nil {
+		log.Fatalln(err)
+	}
+	for rows.Next() {
+		products = append(products, p.mustTransformRows(rows))
+	}
+	return &pb.ListProductsResponse{Products: products}, nil
 }
 
 func (p *productCatalog) GetProduct(ctx context.Context, req *pb.GetProductRequest) (*pb.Product, error) {
 	span := trace.SpanFromContext(ctx)
 	span.SetAttributes(attribute.String("app.product_id", req.GetId()))
 
-	//mockDatabaseCall(ctx, 30, "SELECT productcatalog.products", "SELECT * FROM products WHERE product_id = ?")
-	sleepRandom(30)
-
-	var found *pb.Product
-	for i := 0; i < len(parseCatalog()); i++ {
-		if req.Id == parseCatalog()[i].Id {
-			found = parseCatalog()[i]
-		}
+	rows, err := db.QueryxContext(ctx, "SELECT * FROM products WHERE id = ?", req.GetId())
+	if err != nil {
+		log.Fatalln(err)
 	}
-	if found == nil {
+
+	if rows.Next() {
+		return p.mustTransformRows(rows), nil
+	} else {
 		return nil, status.Errorf(codes.NotFound, "no product with ID %s", req.Id)
 	}
-	return found, nil
 }
 
 func (p *productCatalog) SearchProducts(ctx context.Context, req *pb.SearchProductsRequest) (*pb.SearchProductsResponse, error) {
-	mockDatabaseCall(ctx, 50, "SELECT productcatalog.products", "SELECT * FROM products WHERE name LIKE ? OR description LIKE ?")
-
-	// Interpret query as a substring match in name or description.
 	var ps []*pb.Product
-	for _, p := range parseCatalog() {
-		if strings.Contains(strings.ToLower(p.Name), strings.ToLower(req.Query)) ||
-			strings.Contains(strings.ToLower(p.Description), strings.ToLower(req.Query)) {
-			ps = append(ps, p)
-		}
+	rows, err := db.QueryxContext(ctx, "SELECT * FROM products WHERE name LIKE ? OR description LIKE ?", req.Query, req.Query)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	for rows.Next() {
+		ps = append(ps, p.mustTransformRows(rows))
 	}
 	return &pb.SearchProductsResponse{Results: ps}, nil
+}
+
+func (p *productCatalog) mustTransformRows(rows *sqlx.Rows) *pb.Product {
+	var product struct {
+		Id          string `db:"id,omitempty"`
+		Name        string `db:"name,omitempty"`
+		Description string `db:"description,omitempty"`
+		Picture     string `db:"picture,omitempty"`
+		PriceUsd    []byte `db:"price_usd,omitempty"`
+		Categories  []byte `db:"categories,omitempty"`
+	}
+
+	err := rows.StructScan(&product)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	var result pb.Product
+	var money pb.Money
+
+	result.Id = product.Id
+	result.Name = product.Name
+	result.Description = product.Description
+	result.Picture = product.Picture
+
+	var categories []string
+	if err := json.Unmarshal(product.PriceUsd, &money); err != nil {
+		log.Fatalln(err)
+	}
+	if err := json.Unmarshal(product.Categories, &categories); err != nil {
+		log.Fatalln(err)
+	}
+
+	result.PriceUsd = &money
+	result.Categories = categories
+	return &result
 }
