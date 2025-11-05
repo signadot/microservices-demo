@@ -1,4 +1,4 @@
-FROM golang:1.17-alpine as builder
+FROM --platform=linux/amd64 golang:1.17-alpine as builder
 RUN apk add --no-cache ca-certificates git
 WORKDIR /src
 
@@ -8,7 +8,7 @@ RUN go mod download
 COPY . .
 RUN go build -o /go/bin/frontend .
 
-FROM alpine as release
+FROM --platform=linux/amd64 alpine as release
 RUN apk add --no-cache ca-certificates \
     busybox-extras net-tools bind-tools
 WORKDIR /frontend

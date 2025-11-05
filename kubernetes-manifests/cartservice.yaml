@@ -21,6 +21,8 @@ spec:
         ports:
         - containerPort: 7070
         env:
+        - name: ASPNETCORE_URLS
+          value: "http://0.0.0.0:7070"
         - name: REDIS_ADDR
           value: "redis-cart:6379"
         - name: SERVICE_NAME
@@ -36,19 +38,26 @@ spec:
         resources:
           requests:
             cpu: 200m
-            memory: 64Mi
+            memory: 128Mi
           limits:
             cpu: 300m
-            memory: 128Mi
-        # readinessProbe:
-        #   initialDelaySeconds: 15
-        #   exec:
-        #     command: ["/bin/grpc_health_probe", "-addr=:7070", "-rpc-timeout=5s"]
-        # livenessProbe:
-        #   initialDelaySeconds: 15
-        #   periodSeconds: 10
-        #   exec:
-        #     command: ["/bin/grpc_health_probe", "-addr=:7070", "-rpc-timeout=5s"]
+            memory: 256Mi
+        readinessProbe:
+          initialDelaySeconds: 20
+          periodSeconds: 10
+          timeoutSeconds: 10
+          successThreshold: 1
+          failureThreshold: 3
+          exec:
+            command: ["/bin/grpc_health_probe", "-addr=:7070", "-rpc-timeout=5s", "-connect-timeout=5s"]
+        livenessProbe:
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          timeoutSeconds: 10
+          successThreshold: 1
+          failureThreshold: 3
+          exec:
+            command: ["/bin/grpc_health_probe", "-addr=:7070", "-rpc-timeout=5s", "-connect-timeout=5s"]
 ---
 apiVersion: v1
 kind: Service

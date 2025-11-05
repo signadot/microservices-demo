@@ -1,4 +1,4 @@
-FROM openjdk:11-slim as builder
+FROM eclipse-temurin:11-jdk as builder
 
 WORKDIR /app
 
@@ -11,7 +11,7 @@ COPY . .
 RUN chmod +x gradlew
 RUN ./gradlew installDist
 
-FROM openjdk:11-slim
+FROM eclipse-temurin:11-jre
 
 RUN apt-get -y update && apt-get install -qqy \
     wget \

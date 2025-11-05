@@ -1,0 +1,22 @@
+name: "baseline-traffic-rec-arjun"
+spec:
+  cluster: "arjun-docker-desktop"
+  ttl:
+    duration: 24h
+  description: "Recording baseline traffic for microservices demo app"
+  virtual:
+  - name: "checkout"
+    workload:
+      kind: Deployment
+      namespace: "default"
+      name: "checkoutservice"
+  - name: "cart"
+    workload:
+      kind: Deployment
+      namespace: "default"
+      name: "cartservice"
+  - name: "catalog"
+    workload:
+      kind: Deployment
+      namespace: "default"
+      name: "productcatalogservice"

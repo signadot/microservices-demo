@@ -1,4 +1,4 @@
-FROM node:12-alpine as base
+FROM --platform=linux/amd64 node:12-alpine as base
 
 FROM base as builder
 

@@ -1,4 +1,4 @@
-FROM python:3.7-slim
+FROM --platform=linux/amd64 python:3.7-slim
 RUN apt-get update -qqy && \
 	apt-get -qqy install wget g++ && \
 	rm -rf /var/lib/apt/lists/*
