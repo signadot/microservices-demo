@@ -17,10 +17,14 @@ spec:
       terminationGracePeriodSeconds: 5
       containers:
       - name: server
-        image: signadot/productcatalogservice:latest
+        image: productcatalogservice:latest
         ports:
         - containerPort: 3550
         env:
+        - name: DB_HOST
+          value: "mariadb.shop.svc"
+        - name: DB_PORT
+          value: "3306"
         - name: PORT
           value: "3550"
         - name: OTEL_EXPORTER_OTLP_ENDPOINT

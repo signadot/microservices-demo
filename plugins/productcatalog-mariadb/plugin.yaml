@@ -1,0 +1,34 @@
+name: productcatalog-mariadb
+spec:
+  description: |
+    Provision a MariaDB instance for productcatalog
+    Sandbox should provide input 'values' for the values.yaml.
+
+  runner:
+    image: dtzar/helm-kubectl
+    namespace: signadot
+    podTemplateOverlay: |
+      spec:
+        serviceAccountName: sd-productcatalog-mariadb
+
+  create:
+  - name: provision
+    inputs:
+    - name: values
+      valueFromSandbox: true
+      as:
+        env: VALUES
+
+    outputs:
+    - name: host
+      valueFromPath: /tmp/host
+    - name: port
+      valueFromPath: /tmp/port
+    - name: root-password
+      valueFromPath: /tmp/root-password
+
+    script: "@{embed: ./plugin/provision.sh}"
+
+  delete:
+    - name: deprovision
+      script: "@{embed: ./plugin/deprovision.sh}"

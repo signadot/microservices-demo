@@ -15,7 +15,6 @@ RUN GRPC_HEALTH_PROBE_VERSION=v0.3.6 && \
     chmod +x /bin/grpc_health_probe
 WORKDIR /productcatalogservice
 COPY --from=builder /productcatalogservice ./server
-COPY products.json .
 EXPOSE 3550
 ENTRYPOINT ["/productcatalogservice/server"]
 

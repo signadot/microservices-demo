@@ -17,7 +17,7 @@ spec:
       restartPolicy: Always
       containers:
       - name: main
-        image: signadot/loadgenerator:latest
+        image: loadgenerator:latest
         env:
         - name: FRONTEND_ADDR
           value: http://frontend
