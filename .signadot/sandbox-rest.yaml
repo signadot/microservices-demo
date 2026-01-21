@@ -1,0 +1,20 @@
+name: "@{name}"
+spec:
+  description: Adds REST API to the baseline sandbox
+  cluster: ms-cluster
+  labels:
+    branch: "rest"
+  forks:
+    - forkOf:
+        kind: Deployment
+        name: restservice
+        namespace: default
+      customizations:
+        images:
+          - image: {docker_username}/{docker_repo}:@{rest-tag}
+  defaultRouteGroup: # CLI v0.3.7+ required (see sandbox specification for details)
+    endpoints:
+      - name: rest-endpoint
+        target: http://restservice.default.svc:5051
+      - name: frontend-endpoint
+        target: http://frontend.default.svc:80
