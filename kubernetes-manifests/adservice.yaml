@@ -26,6 +26,8 @@ spec:
     metadata:
       labels:
         app: adservice
+      annotations:
+        sidecar.signadot.com/inject: "true"
     spec:
       serviceAccountName: adservice
       terminationGracePeriodSeconds: 5

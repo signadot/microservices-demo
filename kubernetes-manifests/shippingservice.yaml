@@ -26,6 +26,8 @@ spec:
     metadata:
       labels:
         app: shippingservice
+      annotations:
+        sidecar.signadot.com/inject: "true"
     spec:
       serviceAccountName: shippingservice
       securityContext:

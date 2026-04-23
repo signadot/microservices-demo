@@ -26,6 +26,8 @@ spec:
     metadata:
       labels:
         app: paymentservice
+      annotations:
+        sidecar.signadot.com/inject: "true"
     spec:
       serviceAccountName: paymentservice
       terminationGracePeriodSeconds: 5

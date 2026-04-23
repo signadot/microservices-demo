@@ -26,6 +26,8 @@ spec:
     metadata:
       labels:
         app: recommendationservice
+      annotations:
+        sidecar.signadot.com/inject: "true"
     spec:
       serviceAccountName: recommendationservice
       terminationGracePeriodSeconds: 5
