@@ -26,6 +26,8 @@ spec:
     metadata:
       labels:
         app: productcatalogservice
+      annotations:
+        sidecar.signadot.com/inject: "true"
     spec:
       serviceAccountName: productcatalogservice
       terminationGracePeriodSeconds: 5

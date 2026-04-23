@@ -28,6 +28,7 @@ spec:
         app: frontend
       annotations:
         sidecar.istio.io/rewriteAppHTTPProbers: "true"
+        sidecar.signadot.com/inject: "true"
     spec:
       serviceAccountName: frontend
       securityContext:

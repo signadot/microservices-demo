@@ -26,6 +26,8 @@ spec:
     metadata:
       labels:
         app: emailservice
+      annotations:
+        sidecar.signadot.com/inject: "true"
     spec:
       serviceAccountName: emailservice
       terminationGracePeriodSeconds: 5

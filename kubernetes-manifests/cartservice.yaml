@@ -26,6 +26,8 @@ spec:
     metadata:
       labels:
         app: cartservice
+      annotations:
+        sidecar.signadot.com/inject: "true"
     spec:
       serviceAccountName: cartservice
       terminationGracePeriodSeconds: 5

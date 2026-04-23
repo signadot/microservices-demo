@@ -32,6 +32,8 @@ spec:
     metadata:
       labels:
         app: currencyservice
+      annotations:
+        sidecar.signadot.com/inject: "true"
     spec:
       serviceAccountName: currencyservice
       terminationGracePeriodSeconds: 5
@@ -193,6 +195,8 @@ spec:
     metadata:
       labels:
         app: productcatalogservice
+      annotations:
+        sidecar.signadot.com/inject: "true"
     spec:
       serviceAccountName: productcatalogservice
       terminationGracePeriodSeconds: 5
@@ -266,6 +270,8 @@ spec:
     metadata:
       labels:
         app: checkoutservice
+      annotations:
+        sidecar.signadot.com/inject: "true"
     spec:
       serviceAccountName: checkoutservice
       securityContext:
@@ -348,6 +354,8 @@ spec:
     metadata:
       labels:
         app: shippingservice
+      annotations:
+        sidecar.signadot.com/inject: "true"
     spec:
       serviceAccountName: shippingservice
       securityContext:
@@ -421,6 +429,8 @@ spec:
     metadata:
       labels:
         app: cartservice
+      annotations:
+        sidecar.signadot.com/inject: "true"
     spec:
       serviceAccountName: cartservice
       terminationGracePeriodSeconds: 5
@@ -564,6 +574,8 @@ spec:
     metadata:
       labels:
         app: emailservice
+      annotations:
+        sidecar.signadot.com/inject: "true"
     spec:
       serviceAccountName: emailservice
       terminationGracePeriodSeconds: 5
@@ -639,6 +651,8 @@ spec:
     metadata:
       labels:
         app: paymentservice
+      annotations:
+        sidecar.signadot.com/inject: "true"
     spec:
       serviceAccountName: paymentservice
       terminationGracePeriodSeconds: 5
@@ -714,6 +728,7 @@ spec:
         app: frontend
       annotations:
         sidecar.istio.io/rewriteAppHTTPProbers: "true"
+        sidecar.signadot.com/inject: "true"
     spec:
       serviceAccountName: frontend
       securityContext:
@@ -840,6 +855,8 @@ spec:
     metadata:
       labels:
         app: recommendationservice
+      annotations:
+        sidecar.signadot.com/inject: "true"
     spec:
       serviceAccountName: recommendationservice
       terminationGracePeriodSeconds: 5
@@ -917,6 +934,8 @@ spec:
     metadata:
       labels:
         app: adservice
+      annotations:
+        sidecar.signadot.com/inject: "true"
     spec:
       serviceAccountName: adservice
       terminationGracePeriodSeconds: 5
