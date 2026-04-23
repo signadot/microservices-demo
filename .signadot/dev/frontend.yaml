@@ -1,0 +1,17 @@
+name: frontend-dev
+spec:
+  cluster: demo
+  description: Local frontend for iterative development
+  labels:
+    service: frontend
+  connection:
+    devboxId: "@{devbox-id}"
+  local:
+  - name: frontend-local
+    from:
+      kind: Deployment
+      namespace: microservices-demo
+      name: frontend
+    mappings:
+    - port: 80
+      toLocal: 127.0.0.1:8080

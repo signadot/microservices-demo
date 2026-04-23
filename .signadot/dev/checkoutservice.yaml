@@ -1,0 +1,17 @@
+name: checkoutservice-dev
+spec:
+  cluster: demo
+  description: Local checkoutservice for iterative development
+  labels:
+    service: checkoutservice
+  connection:
+    devboxId: "@{devbox-id}"
+  local:
+  - name: checkoutservice-local
+    from:
+      kind: Deployment
+      namespace: microservices-demo
+      name: checkoutservice
+    mappings:
+    - port: 5050
+      toLocal: 127.0.0.1:5050

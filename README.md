@@ -137,6 +137,7 @@ Find **Protocol Buffers Descriptions** at the [`./protos` directory](/protos).
 ## Documentation
 
 - [Development](/docs/development-guide.md) to learn how to run and develop this app locally.
+- [Signadot sandboxes](/.signadot/README.md) for iterating on a single service against a real cluster without rebuilding images.
 
 ## Demos featuring Online Boutique
 
