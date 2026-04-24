@@ -88,6 +88,46 @@ fuser -k 8080/tcp 2>/dev/null || true
 setsid /tmp/start_frontend.sh >> /tmp/frontend.log 2>&1 &
 ```
 
+### shippingservice (Go, port 50051)
+
+The shippingservice has no outbound service dependencies. It receives the cart
+subtotal in USD directly in the `GetQuoteRequest.cart_subtotal_usd` field
+(populated by checkoutservice) and applies the free-shipping threshold locally.
+
+```bash
+signadot sandbox apply -f .signadot/dev/shippingservice.yaml \
+  --set devbox-id=<devbox-id>
+
+cd src/shippingservice
+go build -o /tmp/shippingservice .
+
+cat > /tmp/start_shipping.sh << 'EOF'
+#!/bin/bash
+export PORT=50051
+export DISABLE_PROFILER=1
+exec /tmp/shippingservice
+EOF
+chmod +x /tmp/start_shipping.sh
+
+fuser -k 50051/tcp 2>/dev/null || true
+setsid /tmp/start_shipping.sh >> /tmp/shippingservice.log 2>&1 &
+```
+
+Validate with grpcurl from the devbox:
+
+```bash
+ROUTING_KEY=$(signadot sandbox get shippingservice-dev -o json | jq -r .routingKey)
+
+grpcurl -plaintext \
+  -H "baggage: sd-routing-key=${ROUTING_KEY}" \
+  -import-path protos -proto demo.proto \
+  -d '{"address":{"city":"SF"},"items":[{"product_id":"1YMWWN1N4O","quantity":1}],
+       "cart_subtotal_usd":{"currency_code":"USD","units":"109","nanos":990000000}}' \
+  shippingservice.microservices-demo.svc:50051 \
+  hipstershop.ShippingService/GetQuote
+# expect cost_usd.units = 0 (free shipping)
+```
+
 ## Known gotchas
 
 - **Frontend Service port is 80, not 8080.** The Dockerfile `EXPOSE 8080` is

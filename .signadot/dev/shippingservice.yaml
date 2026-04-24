@@ -1,0 +1,17 @@
+name: shippingservice-dev
+spec:
+  cluster: demo
+  description: Local shippingservice for iterative development
+  labels:
+    service: shippingservice
+  connection:
+    devboxId: "@{devbox-id}"
+  local:
+  - name: shippingservice-local
+    from:
+      kind: Deployment
+      namespace: microservices-demo
+      name: shippingservice
+    mappings:
+    - port: 50051
+      toLocal: 127.0.0.1:50051
