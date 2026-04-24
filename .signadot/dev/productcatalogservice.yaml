@@ -1,0 +1,17 @@
+name: productcatalogservice-dev
+spec:
+  cluster: demo
+  description: Local productcatalogservice for iterative development
+  labels:
+    service: productcatalogservice
+  connection:
+    devboxId: "@{devbox-id}"
+  local:
+  - name: productcatalogservice-local
+    from:
+      kind: Deployment
+      namespace: microservices-demo
+      name: productcatalogservice
+    mappings:
+    - port: 3550
+      toLocal: 127.0.0.1:3550
