@@ -96,23 +96,6 @@ setsid /tmp/start_frontend.sh >> /tmp/frontend.log 2>&1 &
   Using `:8080` on the `.svc` URL returns an Envoy 503 that looks like a pod
   health issue but is a port mismatch.
 
-- **Go gRPC DNS can hang ~30s per channel.** The default Go resolver does an
-  `_grpclb._tcp.<target>` SRV lookup and waits the full timeout on clusters
-  that don't publish those records. A service with N downstreams can take
-  N × 30s on the first request. Mitigations: prefix addresses with
-  `passthrough:///` (e.g. `PRODUCT_CATALOG_SERVICE_ADDR=passthrough:///productcatalogservice.microservices-demo.svc:3550`)
-  to skip DNS, or keep a single long-lived `grpc.ClientConn` per downstream.
-
-- **Preview vs. finalize seam for shipping cost.** The cart page preview is
-  rendered by `frontend` calling `shippingservice.GetQuote` **directly**
-  (`src/frontend/handlers.go` / `src/frontend/rpc.go`). The final order total
-  is produced by `checkoutservice.PlaceOrder`. Any shipping-cost rule applied
-  only in checkoutservice will ship the correct final total but display a
-  different preview on the cart page. To make preview and final total match,
-  either apply the same rule in frontend's shipping helper or move the rule
-  into `shippingservice` (which requires widening the proto — its current
-  `GetQuoteRequest` carries only address + items, no subtotal).
-
 - **gRPC downstream addresses must be fully set.** Missing a `*_SERVICE_ADDR`
   env var does not fail at startup — it fails on the first request that needs
   that downstream. Grep the service's Go source for `*ServiceAddr` / `getEnv`
