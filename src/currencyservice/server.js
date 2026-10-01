@@ -56,9 +56,14 @@ if(process.env.ENABLE_TRACING == "1") {
 
   const opentelemetry = require('@opentelemetry/sdk-node');
 
-  const { OTLPTraceExporter } = require('@opentelemetry/exporter-otlp-grpc');
+  const { OTLPTraceExporter } = require('@opentelemetry/exporter-trace-otlp-grpc');
 
-  const collectorUrl = process.env.COLLECTOR_SERVICE_ADDR;
+  // The collector takes plaintext gRPC. This exporter uses TLS for a bare
+  // host:port address, so add http:// unless a scheme is already set.
+  const collectorAddr = process.env.COLLECTOR_SERVICE_ADDR;
+  const collectorUrl = collectorAddr && !collectorAddr.includes('://')
+    ? `http://${collectorAddr}`
+    : collectorAddr;
   const traceExporter = new OTLPTraceExporter({url: collectorUrl});
   const sdk = new opentelemetry.NodeSDK({
     resource: resourceFromAttributes({
